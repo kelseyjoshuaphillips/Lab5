@@ -19,7 +19,6 @@ namespace Lab5
             var blobConnection = builder.Configuration.GetConnectionString("AzureBlobStorage");
             builder.Services.AddSingleton(new BlobServiceClient(blobConnection));
 
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -34,6 +33,12 @@ namespace Lab5
             app.UseAuthorization();
 
             /* Define routing here */
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
+
+
 
             app.Run();
         }
