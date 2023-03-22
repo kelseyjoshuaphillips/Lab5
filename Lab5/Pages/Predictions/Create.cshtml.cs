@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Lab5.Data;
 using Lab5.Models;
 using Azure.Storage.Blobs;
+using System.Drawing;
+using Azure;
+using System.Runtime.CompilerServices;
 
 namespace Lab5.Pages.Predictions
 {
@@ -17,6 +20,10 @@ namespace Lab5.Pages.Predictions
         private readonly string earthContainerName = "earthimages";
         private readonly string computerContainerName = "computerimages";
         private readonly Lab5.Data.PredictionDataContext _context;
+        private readonly string containerName = "predictions";
+        [BindProperty]
+        public Prediction Prediction { get; set; }
+
 
         public CreateModel(Lab5.Data.PredictionDataContext context, BlobServiceClient blobServiceClient)
         {
@@ -24,27 +31,69 @@ namespace Lab5.Pages.Predictions
             _context = context;
         }
 
-        public IActionResult OnGet()
+        public async Task OnGet()
         {
-            return Page();
+
         }
 
-        [BindProperty]
-        public Prediction Prediction { get; set; }
-        
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(IFormFile file)
         {
-          if (!ModelState.IsValid)
+            BlobContainerClient containerClient = null;
+            Prediction.FileName = file.FileName;
+            if (Prediction.Question.Equals(Question.Earth))
+            {
+                try
+                {
+                    containerClient = await _blobServiceClient.CreateBlobContainerAsync(earthContainerName);
+                    containerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
+                }
+                catch(RequestFailedException)
+                {
+                    containerClient = _blobServiceClient.GetBlobContainerClient(earthContainerName);
+                }
+
+            }
+            else if (Prediction.Question.Equals(Question.Computer))
+            {
+                try
+                {
+                    containerClient = await _blobServiceClient.CreateBlobContainerAsync(computerContainerName);
+                    containerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
+                }
+                catch (RequestFailedException)
+                {
+                    containerClient = _blobServiceClient.GetBlobContainerClient(computerContainerName);
+                }
+
+            }
+            try
+            {
+                string randomFileName = Path.GetRandomFileName();
+                var blockBlob = containerClient.GetBlobClient(randomFileName);
+                if(await blockBlob.ExistsAsync())
+                {
+                    await blockBlob.DeleteAsync();
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    await blockBlob.UploadAsync(memoryStream);
+                    memoryStream.Close();
+                }
+            }
+            catch (RequestFailedException)
             {
                 return Page();
             }
 
-            _context.Predictions.Add(Prediction);
-            await _context.SaveChangesAsync();
+            //_context.Predictions.Add(Prediction);
+            //await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
     }
 }
+

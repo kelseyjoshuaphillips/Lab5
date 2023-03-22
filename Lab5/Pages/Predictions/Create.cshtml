@@ -11,25 +11,24 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" class="form" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="Prediction.FileName" class="control-label"></label>
-                <input asp-for="Prediction.FileName" class="form-control" />
-                <span asp-validation-for="Prediction.FileName" class="text-danger"></span>
+                <label asp-for="Prediction.Question" class="control-label">Select a question:</label>
+                <select asp-for="Prediction.Question" class="form-control">
+                    <option value="earth">What Earth will look like in 20 years?</option>
+                    <option value="computer">What Computers will look like in 20 years?</option>
+                </select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Prediction.Url" class="control-label"></label>
-                <input asp-for="Prediction.Url" class="form-control" />
-                <span asp-validation-for="Prediction.Url" class="text-danger"></span>
+                <label class="control-label">Upload an image:</label>
+                <input name="file" type="file" class="form-control"/>
             </div>
+
             <div class="form-group">
-                <label asp-for="Prediction.Question" class="control-label"></label>
-                <select asp-for="Prediction.Question" class="form-control"></select>
-                <span asp-validation-for="Prediction.Question" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input name="file" type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

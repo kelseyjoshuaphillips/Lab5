@@ -26,23 +26,25 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Prediction) {
+<!--@foreach (var item in Model.Prediction) {
         <tr>
             <td>
+                
                 @Html.DisplayFor(modelItem => item.FileName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Url)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Question)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Url)
+            </td>
+
+            <td>
                 <a asp-page="./Edit" asp-route-id="@item.PredictionId">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.PredictionId">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.PredictionId">Delete</a>
             </td>
-        </tr>
+        </tr>-->
 }
     </tbody>
 </table>

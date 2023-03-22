@@ -21,5 +21,6 @@ namespace Lab5.Models
 
         [Required]
         public Question Question { get; set; }
+
     }
 }
